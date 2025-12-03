@@ -5,7 +5,7 @@ echo "Starting web-dlp API..."
 echo ""
 
 # Start worker in background
-python app/worker.py &
+python -m app.worker &
 
 # Wait a moment
 sleep 2

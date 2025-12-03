@@ -5,7 +5,7 @@ echo Starting web-dlp API...
 echo.
 
 REM Start worker in background
-start /B python app\worker.py
+start /B python -m app.worker
 
 REM Wait a moment
 timeout /t 2 /nobreak >nul
