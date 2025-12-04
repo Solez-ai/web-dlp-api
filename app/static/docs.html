@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>web-dlp API Documentation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" />
     <style>
         :root {
             --bg-primary: #ffffff;
@@ -292,13 +295,19 @@
         }
 
         .code-content {
-            background: var(--code-bg);
-            padding: 1.5rem;
-            overflow-x: auto;
-            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
+    background: var(--code-bg) !important;
+    padding: 1.5rem !important;
+    overflow-x: auto;
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+
+.code-content code {
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace !important;
+    font-size: 0.9rem !important;
+    line-height: 1.6 !important;
+    color: inherit !important;
+}
 
         /* Endpoint Cards */
         .endpoint-card {
@@ -330,10 +339,25 @@
             text-transform: uppercase;
         }
 
-        .method-get { background: #28a745; color: white; }
-        .method-post { background: #0066ff; color: white; }
-        .method-put { background: #ffc107; color: #1a1a1a; }
-        .method-delete { background: #dc3545; color: white; }
+        .method-get {
+            background: #28a745;
+            color: white;
+        }
+
+        .method-post {
+            background: #0066ff;
+            color: white;
+        }
+
+        .method-put {
+            background: #ffc107;
+            color: #1a1a1a;
+        }
+
+        .method-delete {
+            background: #dc3545;
+            color: white;
+        }
 
         .endpoint-path {
             font-family: 'Monaco', monospace;
@@ -451,6 +475,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <div class="header">
@@ -533,7 +558,9 @@
                 web-dlp API Documentation
             </h1>
             <p class="section-description">
-                A powerful, queue-based REST API for downloading YouTube videos and extracting audio. Built with FastAPI and powered by yt-dlp, this API provides reliable, non-blocking video processing with automatic cleanup and rate limiting.
+                A powerful, queue-based REST API for downloading YouTube videos and extracting audio. Built with FastAPI
+                and powered by yt-dlp, this API provides reliable, non-blocking video processing with automatic cleanup
+                and rate limiting.
             </p>
 
             <div class="features-grid">
@@ -556,7 +583,8 @@
                         <i class="fas fa-bolt"></i>
                     </div>
                     <div class="feature-title">Queue System</div>
-                    <div class="feature-description">Non-blocking background processing for multiple concurrent requests.</div>
+                    <div class="feature-description">Non-blocking background processing for multiple concurrent
+                        requests.</div>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
@@ -577,7 +605,8 @@
                         <i class="fas fa-tachometer-alt"></i>
                     </div>
                     <div class="feature-title">High Performance</div>
-                    <div class="feature-description">Optimized for Railway deployment with efficient resource usage.</div>
+                    <div class="feature-description">Optimized for Railway deployment with efficient resource usage.
+                    </div>
                 </div>
             </div>
         </section>
@@ -588,11 +617,12 @@
                 <i class="fas fa-rocket"></i>
                 Quick Start Guide
             </h2>
-            
+
             <div class="steps">
                 <div class="step">
                     <div class="step-title">Create a Download Job</div>
-                    <div class="step-description">Send a POST request to /request with the YouTube URL and desired format.</div>
+                    <div class="step-description">Send a POST request to /request with the YouTube URL and desired
+                        format.</div>
                     <div class="code-block">
                         <div class="code-header">
                             <span class="code-language">bash</span>
@@ -601,15 +631,16 @@
                                 <span>Copy</span>
                             </button>
                         </div>
-                        <div class="code-content" id="code1">curl -X POST https://your-api-url.railway.app/request \
-  -H "Content-Type: application/json" \
-  -d '{"url":"https://www.youtube.com/watch?v=dQw4w9WgXcQ","format":"mp3"}'</div>
+                        <pre class="code-content"><code class="language-bash" id="code1">curl -X POST https://your-api-url.railway.app/request \
+                            -H "Content-Type: application/json" \
+                            -d '{"url":"https://www.youtube.com/watch?v=dQw4w9WgXcQ","format":"mp3"}'</code></pre>
                     </div>
                 </div>
 
                 <div class="step">
                     <div class="step-title">Check Job Status</div>
-                    <div class="step-description">Use the returned job_id to poll the status endpoint until completion.</div>
+                    <div class="step-description">Use the returned job_id to poll the status endpoint until completion.
+                    </div>
                     <div class="code-block">
                         <div class="code-header">
                             <span class="code-language">bash</span>
@@ -618,13 +649,15 @@
                                 <span>Copy</span>
                             </button>
                         </div>
-                        <div class="code-content" id="code2">curl "https://your-api-url.railway.app/status?id=YOUR_JOB_ID"</div>
+                        <pre class="code-content"><code class="language-bash" id="code2">curl
+                            "https://your-api-url.railway.app/status?id=YOUR_JOB_ID"</code></pre>
                     </div>
                 </div>
 
                 <div class="step">
                     <div class="step-title">Download the File</div>
-                    <div class="step-description">Once status is "finished", download your file from the result endpoint.</div>
+                    <div class="step-description">Once status is "finished", download your file from the result
+                        endpoint.</div>
                     <div class="code-block">
                         <div class="code-header">
                             <span class="code-language">bash</span>
@@ -633,7 +666,8 @@
                                 <span>Copy</span>
                             </button>
                         </div>
-                        <div class="code-content" id="code3">curl "https://your-api-url.railway.app/result?id=YOUR_JOB_ID" --output song.mp3</div>
+                        <pre class="code-content"><code class="language-bash" id="code3">curl
+                            "https://your-api-url.railway.app/result?id=YOUR_JOB_ID" --output song.mp3</code></pre>
                     </div>
                 </div>
             </div>
@@ -646,7 +680,8 @@
                 Authentication
             </h2>
             <p class="section-description">
-                This API is currently <strong>open and does not require authentication</strong>. Rate limiting is enforced based on IP address to prevent abuse. Each IP is limited to 5 requests per minute.
+                This API is currently <strong>open and does not require authentication</strong>. Rate limiting is
+                enforced based on IP address to prevent abuse. Each IP is limited to 5 requests per minute.
             </p>
         </section>
 
@@ -665,9 +700,10 @@
                 </div>
                 <div class="endpoint-body">
                     <p class="endpoint-description">
-                        Health check endpoint to verify API availability. Returns a simple status message. Use this for monitoring and keep-alive pings.
+                        Health check endpoint to verify API availability. Returns a simple status message. Use this for
+                        monitoring and keep-alive pings.
                     </p>
-                    
+
                     <h4>Response Example</h4>
                     <div class="code-block">
                         <div class="code-header">
@@ -677,9 +713,9 @@
                                 <span>Copy</span>
                             </button>
                         </div>
-                        <div class="code-content" id="code4">{
-  "status": "YT-API running"
-}</div>
+                        <pre class="code-content"><code class="language-json" id="code4">{
+                            "status": "YT-API running"
+                            }</code></pre>
                     </div>
                 </div>
             </div>
@@ -692,9 +728,10 @@
                 </div>
                 <div class="endpoint-body">
                     <p class="endpoint-description">
-                        Creates a new download job and adds it to the processing queue. Returns a unique job ID for tracking.
+                        Creates a new download job and adds it to the processing queue. Returns a unique job ID for
+                        tracking.
                     </p>
-                    
+
                     <h4>Request Body</h4>
                     <table class="params-table">
                         <thead>
@@ -730,10 +767,10 @@
                                 <span>Copy</span>
                             </button>
                         </div>
-                        <div class="code-content" id="code5">{
-  "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-  "format": "mp3"
-}</div>
+                        <pre class="code-content"><code class="language-json" id="code5">{
+                            "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                            "format": "mp3"
+                            }</code></pre>
                     </div>
 
                     <h4>Response Example</h4>
@@ -745,10 +782,10 @@
                                 <span>Copy</span>
                             </button>
                         </div>
-                        <div class="code-content" id="code6">{
-  "job_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "status": "queued"
-}</div>
+                        <pre class="code-content"><code class="language-json" id="code6">{
+                            "job_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                            "status": "queued"
+                            }</code></pre>
                     </div>
                 </div>
             </div>
@@ -761,9 +798,10 @@
                 </div>
                 <div class="endpoint-body">
                     <p class="endpoint-description">
-                        Get the current status and progress of a download job. Poll this endpoint until status is "finished" or "error".
+                        Get the current status and progress of a download job. Poll this endpoint until status is
+                        "finished" or "error".
                     </p>
-                    
+
                     <h4>Query Parameters</h4>
                     <table class="params-table">
                         <thead>
@@ -793,11 +831,11 @@
                                 <span>Copy</span>
                             </button>
                         </div>
-                        <div class="code-content" id="code7">{
-  "status": "finished",
-  "progress": 100,
-  "error": null
-}</div>
+                        <pre class="code-content"><code class="language-json" id="code7">{
+                            "status": "finished",
+                            "progress": 100,
+                            "error": null
+                            }</code></pre>
                     </div>
 
                     <h4>Status Values</h4>
@@ -818,9 +856,10 @@
                 </div>
                 <div class="endpoint-body">
                     <p class="endpoint-description">
-                        Download the processed file. Only works when job status is "finished". The file is streamed directly to your client.
+                        Download the processed file. Only works when job status is "finished". The file is streamed
+                        directly to your client.
                     </p>
-                    
+
                     <h4>Query Parameters</h4>
                     <table class="params-table">
                         <thead>
@@ -855,10 +894,10 @@
                                 <span>Copy</span>
                             </button>
                         </div>
-                        <div class="code-content" id="code8">{
-  "error": "not_ready",
-  "status": "processing"
-}</div>
+                        <pre class="code-content"><code class="language-json" id="code8">{
+                            "error": "not_ready",
+                            "status": "processing"
+                            }</code></pre>
                     </div>
                 </div>
             </div>
@@ -880,42 +919,42 @@
                         <span>Copy</span>
                     </button>
                 </div>
-                <div class="code-content" id="code9">const API_URL = 'https://your-api-url.railway.app';
+                <pre class="code-content"><code class="language-javascript" id="code9">const API_URL = 'https://your-api-url.railway.app';
 
-// Create a download job
-async function downloadYouTubeAudio(url) {
-  // Step 1: Create job
-  const createResponse = await fetch(`${API_URL}/request`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url, format: 'mp3' })
-  });
-  const { job_id } = await createResponse.json();
-  console.log('Job created:', job_id);
+                    // Create a download job
+                    async function downloadYouTubeAudio(url) {
+                    // Step 1: Create job
+                    const createResponse = await fetch(`${API_URL}/request`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url, format: 'mp3' })
+                    });
+                    const { job_id } = await createResponse.json();
+                    console.log('Job created:', job_id);
 
-  // Step 2: Poll for completion
-  while (true) {
-    const statusResponse = await fetch(`${API_URL}/status?id=${job_id}`);
-    const { status, progress } = await statusResponse.json();
-    
-    console.log(`Status: ${status} (${progress}%)`);
-    
-    if (status === 'finished') break;
-    if (status === 'error') throw new Error('Download failed');
-    
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2s
-  }
+                    // Step 2: Poll for completion
+                    while (true) {
+                    const statusResponse = await fetch(`${API_URL}/status?id=${job_id}`);
+                    const { status, progress } = await statusResponse.json();
 
-  // Step 3: Download file
-  const fileUrl = `${API_URL}/result?id=${job_id}`;
-  console.log('Download ready:', fileUrl);
-  return fileUrl;
-}
+                    console.log(`Status: ${status} (${progress}%)`);
 
-// Usage
-downloadYouTubeAudio('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
-  .then(url => console.log('Success!', url))
-  .catch(err => console.error('Error:', err));</div>
+                    if (status === 'finished') break;
+                    if (status === 'error') throw new Error('Download failed');
+
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2s
+                    }
+
+                    // Step 3: Download file
+                    const fileUrl = `${API_URL}/result?id=${job_id}`;
+                    console.log('Download ready:', fileUrl);
+                    return fileUrl;
+                    }
+
+                    // Usage
+                    downloadYouTubeAudio('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+                    .then(url => console.log('Success!', url))
+                    .catch(err => console.error('Error:', err));</code></pre>
             </div>
 
             <h3 style="margin: 2rem 0 1rem;">Python</h3>
@@ -927,48 +966,48 @@ downloadYouTubeAudio('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
                         <span>Copy</span>
                     </button>
                 </div>
-                <div class="code-content" id="code10">import requests
-import time
+                <pre class="code-content"><code class="language-python" id="code10">import requests
+                    import time
 
-API_URL = 'https://your-api-url.railway.app'
+                    API_URL = 'https://your-api-url.railway.app'
 
-def download_youtube_video(url, format='mp3'):
-    # Create job
-    response = requests.post(
-        f'{API_URL}/request',
-        json={'url': url, 'format': format}
-    )
-    job_id = response.json()['job_id']
-    print(f'Job created: {job_id}')
-    
-    # Poll for completion
-    while True:
-        response = requests.get(f'{API_URL}/status?id={job_id}')
-        data = response.json()
-        status = data['status']
-        progress = data['progress']
-        
-        print(f'Status: {status} ({progress}%)')
-        
-        if status == 'finished':
-            break
-        elif status == 'error':
-            raise Exception(f"Download failed: {data.get('error')}")
-        
-        time.sleep(2)  # Wait 2 seconds
-    
-    # Download file
-    response = requests.get(f'{API_URL}/result?id={job_id}')
-    filename = f'{job_id}.{format}'
-    
-    with open(filename, 'wb') as f:
-        f.write(response.content)
-    
-    print(f'Downloaded: {filename}')
-    return filename
+                    def download_youtube_video(url, format='mp3'):
+                    # Create job
+                    response = requests.post(
+                    f'{API_URL}/request',
+                    json={'url': url, 'format': format}
+                    )
+                    job_id = response.json()['job_id']
+                    print(f'Job created: {job_id}')
 
-# Usage
-download_youtube_video('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'mp3')</div>
+                    # Poll for completion
+                    while True:
+                    response = requests.get(f'{API_URL}/status?id={job_id}')
+                    data = response.json()
+                    status = data['status']
+                    progress = data['progress']
+
+                    print(f'Status: {status} ({progress}%)')
+
+                    if status == 'finished':
+                    break
+                    elif status == 'error':
+                    raise Exception(f"Download failed: {data.get('error')}")
+
+                    time.sleep(2) # Wait 2 seconds
+
+                    # Download file
+                    response = requests.get(f'{API_URL}/result?id={job_id}')
+                    filename = f'{job_id}.{format}'
+
+                    with open(filename, 'wb') as f:
+                    f.write(response.content)
+
+                    print(f'Downloaded: {filename}')
+                    return filename
+
+                    # Usage
+                    download_youtube_video('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'mp3')</code></pre>
             </div>
 
             <h3 style="margin: 2rem 0 1rem;">cURL</h3>
@@ -980,27 +1019,27 @@ download_youtube_video('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'mp3')</di
                         <span>Copy</span>
                     </button>
                 </div>
-                <div class="code-content" id="code11"># Create job and get job_id
-JOB_ID=$(curl -X POST https://your-api-url.railway.app/request \
-  -H "Content-Type: application/json" \
-  -d '{"url":"https://www.youtube.com/watch?v=dQw4w9WgXcQ","format":"mp3"}' \
-  | jq -r '.job_id')
+                <pre class="code-content"><code class="language-bash" id="code11"># Create job and get job_id
+                    JOB_ID=$(curl -X POST https://your-api-url.railway.app/request \
+                    -H "Content-Type: application/json" \
+                    -d '{"url":"https://www.youtube.com/watch?v=dQw4w9WgXcQ","format":"mp3"}' \
+                    | jq -r '.job_id')
 
-echo "Job ID: $JOB_ID"
+                    echo "Job ID: $JOB_ID"
 
-# Poll status (run until finished)
-while true; do
-  STATUS=$(curl -s "https://your-api-url.railway.app/status?id=$JOB_ID" | jq -r '.status')
-  echo "Status: $STATUS"
-  if [ "$STATUS" = "finished" ]; then
-    break
-  fi
-  sleep 2
-done
+                    # Poll status (run until finished)
+                    while true; do
+                    STATUS=$(curl -s "https://your-api-url.railway.app/status?id=$JOB_ID" | jq -r '.status')
+                    echo "Status: $STATUS"
+                    if [ "$STATUS" = "finished" ]; then
+                    break
+                    fi
+                    sleep 2
+                    done
 
-# Download file
-curl "https://your-api-url.railway.app/result?id=$JOB_ID" --output song.mp3
-echo "Download complete!"</div>
+                    # Download file
+                    curl "https://your-api-url.railway.app/result?id=$JOB_ID" --output song.mp3
+                    echo "Download complete!"</code></pre>
             </div>
         </section>
 
@@ -1013,7 +1052,7 @@ echo "Download complete!"</div>
             <p class="section-description">
                 To ensure fair usage and prevent abuse, the API enforces the following limits:
             </p>
-            
+
             <table class="params-table">
                 <thead>
                     <tr>
@@ -1046,7 +1085,8 @@ echo "Download complete!"</div>
                 </tbody>
             </table>
 
-            <div style="margin-top: 2rem; padding: 1rem; background: var(--bg-secondary); border-left: 4px solid var(--accent); border-radius: 8px;">
+            <div
+                style="margin-top: 2rem; padding: 1rem; background: var(--bg-secondary); border-left: 4px solid var(--accent); border-radius: 8px;">
                 <strong>Note:</strong> When rate limit is exceeded, the API returns HTTP 429 (Too Many Requests).
             </div>
         </section>
@@ -1057,7 +1097,7 @@ echo "Download complete!"</div>
                 <i class="fas fa-exclamation-triangle"></i>
                 Error Handling
             </h2>
-            
+
             <table class="params-table">
                 <thead>
                     <tr>
@@ -1104,9 +1144,9 @@ echo "Download complete!"</div>
                         <span>Copy</span>
                     </button>
                 </div>
-                <div class="code-content" id="code12">{
-  "detail": "Invalid YouTube URL. Only YouTube URLs are supported."
-}</div>
+                <pre class="code-content"><code class="language-json" id="code12">{
+                    "detail": "Invalid YouTube URL. Only YouTube URLs are supported."
+                    }</code></pre>
             </div>
         </section>
     </div>
@@ -1118,14 +1158,14 @@ echo "Download complete!"</div>
             const currentTheme = html.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', newTheme);
-            
+
             const button = document.querySelector('.theme-toggle');
             if (newTheme === 'dark') {
                 button.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
             } else {
                 button.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
             }
-            
+
             localStorage.setItem('theme', newTheme);
         }
 
@@ -1133,7 +1173,7 @@ echo "Download complete!"</div>
         window.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
-            
+
             if (savedTheme === 'dark') {
                 const button = document.querySelector('.theme-toggle');
                 button.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
@@ -1143,13 +1183,13 @@ echo "Download complete!"</div>
         // Copy Code Function
         function copyCode(button, codeId) {
             const codeElement = document.getElementById(codeId);
-            const code = codeElement.textContent;
-            
+const code = codeElement.innerText || codeElement.textContent;
+
             navigator.clipboard.writeText(code).then(() => {
                 const originalHTML = button.innerHTML;
                 button.classList.add('copied');
                 button.innerHTML = '<i class="fas fa-check"></i><span>Copied!</span>';
-                
+
                 setTimeout(() => {
                     button.classList.remove('copied');
                     button.innerHTML = originalHTML;
@@ -1163,10 +1203,10 @@ echo "Download complete!"</div>
                 e.preventDefault();
                 const targetId = item.getAttribute('href').substring(1);
                 const targetElement = document.getElementById(targetId);
-                
+
                 if (targetElement) {
                     targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    
+
                     // Update active state
                     document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
                     item.classList.add('active');
@@ -1178,7 +1218,7 @@ echo "Download complete!"</div>
         window.addEventListener('scroll', () => {
             const sections = document.querySelectorAll('.section');
             const navItems = document.querySelectorAll('.nav-item');
-            
+
             let current = '';
             sections.forEach(section => {
                 const sectionTop = section.offsetTop;
@@ -1196,5 +1236,11 @@ echo "Download complete!"</div>
             });
         });
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
 </body>
 </html>
