@@ -2,65 +2,72 @@
 FastAPI main application with all API endpoints.
 """
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from pathlib import Path
 from app.queue import create_job, get_job_status
 from app.utils import is_valid_youtube_url, check_rate_limit, log_info, log_error
 from app.cleanup import start_cleanup_thread
 
-# Initialize FastAPI app with custom documentation
+# Initialize FastAPI app with professional metadata
 app = FastAPI(
     title="web-dlp API",
     description="""
-    🎥 **YouTube Downloader API** powered by yt-dlp
+    **YouTube Downloader API** powered by yt-dlp
     
-    A queue-based REST API for downloading YouTube videos and audio.
+    A queue-based REST API for downloading YouTube videos and extracting audio.
     
     ## Features
-    - 🎵 **MP3** - Extract audio only (192K quality)
-    - 🎬 **MP4** - Download video (max 720p)
-    - ⚡ **Queue System** - Non-blocking background processing
-    - 🔒 **Rate Limited** - 5 requests per IP per minute
-    - 🧹 **Auto Cleanup** - Files deleted after 10 minutes
+    - **MP3** - Extract audio only (192K quality)
+    - **MP4** - Download video (max 720p)
+    - **Queue System** - Non-blocking background processing
+    - **Rate Limited** - 5 requests per IP per minute
+    - **Auto Cleanup** - Files deleted after 10 minutes
     
     ## Quick Start
     1. Create a job with `POST /request`
     2. Check status with `GET /status?id={job_id}`
     3. Download file with `GET /result?id={job_id}`
+    
+    For detailed documentation, visit the [custom docs page](/docs).
     """,
     version="1.0.0",
     contact={
         "name": "web-dlp API",
-        "url": "https://github.com/yourusername/web-dlp-api",
+        "url": "https://github.com/Solez-ai/web-dlp-api",
     },
     license_info={
         "name": "MIT",
     },
-    # Custom Swagger UI configuration
-    swagger_ui_parameters={
-        "defaultModelsExpandDepth": -1,  # Hide schemas section
-        "docExpansion": "list",  # Expand endpoints
-        "filter": True,  # Enable search filter
-        "syntaxHighlight.theme": "monokai",  # Code syntax theme
-    }
+    # Disable default docs to use custom
+    docs_url=None,
+    redoc_url=None,
 )
 
-# Custom CSS for Swagger UI (Dark Theme)
-from fastapi.openapi.docs import get_swagger_ui_html
-from fastapi.responses import HTMLResponse
+# Mount static files directory
+static_dir = Path(__file__).parent / "static"
+static_dir.mkdir(exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
+# Serve custom documentation
 @app.get("/docs", include_in_schema=False)
-async def custom_swagger_ui_html():
-    """Custom styled documentation page."""
-    return get_swagger_ui_html(
-        openapi_url=app.openapi_url,
-        title=app.title + " - Documentation",
-        swagger_favicon_url="https://fastapi.tiangolo.com/img/favicon.png",
-        swagger_ui_parameters=app.swagger_ui_parameters,
-        swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui.css",
-        swagger_js_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-bundle.js",
-    )
+async def custom_docs():
+    """Serve the custom professional documentation page."""
+    docs_path = static_dir / "docs.html"
+    if docs_path.exists():
+        with open(docs_path, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        return HTMLResponse(content=html_content)
+    else:
+        return HTMLResponse(content="<h1>Documentation not found</h1><p>Please ensure docs.html exists in the static directory.</p>", status_code=404)
+
+# OpenAPI JSON endpoint (for programmatic access)
+@app.get("/openapi.json", include_in_schema=False)
+async def get_openapi():
+    """Return OpenAPI spec as JSON."""
+    return app.openapi()
+
 
 # Start cleanup thread on startup
 @app.on_event("startup")
