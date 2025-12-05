@@ -1,16 +1,16 @@
 """
-Queue system for managing download jobs using multiprocessing.
+Queue system for managing download jobs using threading (Windows-compatible).
 """
-import multiprocessing
-from multiprocessing import Manager
+import queue
+import threading
 from typing import Dict, Any
 import uuid
 import time
 
-# Shared data structures across processes
-manager = Manager()
-job_queue = manager.Queue()
-job_statuses = manager.dict()
+# Thread-safe queue and dictionary
+job_queue = queue.Queue()
+job_statuses: Dict[str, Dict[str, Any]] = {}
+_lock = threading.Lock()
 
 
 def create_job(url: str, format: str) -> str:
@@ -37,8 +37,9 @@ def create_job(url: str, format: str) -> str:
         'created_at': time.time()
     }
     
-    # Store job status
-    job_statuses[job_id] = job_data
+    # Store job status (thread-safe)
+    with _lock:
+        job_statuses[job_id] = job_data
     
     # Add to queue
     job_queue.put(job_data)
@@ -56,7 +57,8 @@ def get_job_status(job_id: str) -> Dict[str, Any]:
     Returns:
         Job status dictionary or None if not found
     """
-    return dict(job_statuses.get(job_id, {}))
+    with _lock:
+        return job_statuses.get(job_id, {}).copy()
 
 
 def update_job_status(job_id: str, **kwargs):
@@ -67,10 +69,9 @@ def update_job_status(job_id: str, **kwargs):
         job_id: Job identifier
         **kwargs: Fields to update (status, progress, error, filename)
     """
-    if job_id in job_statuses:
-        job_data = dict(job_statuses[job_id])
-        job_data.update(kwargs)
-        job_statuses[job_id] = job_data
+    with _lock:
+        if job_id in job_statuses:
+            job_statuses[job_id].update(kwargs)
 
 
 def delete_job(job_id: str):
@@ -80,8 +81,9 @@ def delete_job(job_id: str):
     Args:
         job_id: Job identifier
     """
-    if job_id in job_statuses:
-        del job_statuses[job_id]
+    with _lock:
+        if job_id in job_statuses:
+            del job_statuses[job_id]
 
 
 def get_all_jobs() -> Dict[str, Dict[str, Any]]:
@@ -91,4 +93,5 @@ def get_all_jobs() -> Dict[str, Dict[str, Any]]:
     Returns:
         Dictionary of all jobs
     """
-    return dict(job_statuses)
+    with _lock:
+        return job_statuses.copy()

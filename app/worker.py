@@ -5,6 +5,7 @@ import os
 import sys
 import time
 import subprocess
+import threading
 from pathlib import Path
 from app.queue import job_queue, update_job_status
 from app.utils import log_info, log_error
@@ -143,5 +144,5 @@ def worker_process():
 
 
 if __name__ == '__main__':
-    # Start the worker process
+    # Start the worker thread
     worker_process()

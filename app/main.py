@@ -82,7 +82,17 @@ async def get_openapi():
 # Start cleanup thread on startup
 @app.on_event("startup")
 async def startup_event():
+    """Initialize background threads on application startup."""
+    # Start cleanup thread
     start_cleanup_thread()
+    
+    # Start worker thread
+    import threading
+    from app.worker import worker_process
+    worker_thread = threading.Thread(target=worker_process, daemon=True)
+    worker_thread.start()
+    log_info("Worker thread started")
+    
     log_info("web-dlp API started successfully")
 
 
@@ -103,7 +113,7 @@ class JobStatusResponse(BaseModel):
     """Response model for job status."""
     status: str
     progress: int
-    error: str = None
+    error: str | None = None
 
 
 # API Endpoints
