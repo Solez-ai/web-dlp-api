@@ -4,6 +4,7 @@ FastAPI main application with all API endpoints.
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from pathlib import Path
 from app.queue import create_job, get_job_status
@@ -43,6 +44,15 @@ app = FastAPI(
     # Disable default docs to use custom
     docs_url=None,
     redoc_url=None,
+)
+
+# Add CORS middleware to allow cross-origin requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
 )
 
 # Mount static files directory
