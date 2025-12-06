@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web DLP API - Example</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: slideUp 0.6s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input[type="url"] {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        input[type="url"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .format-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .format-option {
+            position: relative;
+        }
+
+        .format-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .format-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .format-option input[type="radio"]:checked+.format-label {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            transform: scale(1.05);
+        }
+
+        .format-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .format-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .format-desc {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .download-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .download-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .download-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .progress-container {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .progress-container.active {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        .progress-status {
+            text-align: center;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 4px;
+        }
+
+        .progress-detail {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .result-container {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(34, 139, 59, 0.1) 100%);
+            border: 2px solid #28a745;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .result-container.active {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        .result-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .result-message {
+            color: #28a745;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .result-download-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .result-download-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+
+        .error-container {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(200, 35, 51, 0.1) 100%);
+            border: 2px solid #dc3545;
+            border-radius: 12px;
+        }
+
+        .error-container.active {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        .error-icon {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .api-info {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .api-info-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .api-info-text {
+            color: #666;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .api-info-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .api-info-link:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Web DLP API - Example</h1>
+        <p class="subtitle">Download YouTube videos and audio easily</p>
+
+        <form id="downloadForm">
+            <div class="form-group">
+                <label for="videoUrl">YouTube URL</label>
+                <input type="url" id="videoUrl" placeholder="https://www.youtube.com/watch?v=..." required>
+            </div>
+
+            <div class="form-group">
+                <label>Choose Format</label>
+                <div class="format-selector">
+                    <div class="format-option">
+                        <input type="radio" id="mp3" name="format" value="mp3" checked>
+                        <label for="mp3" class="format-label">
+                            <div class="format-icon">🎵</div>
+                            <div class="format-title">MP3 Audio</div>
+                            <div class="format-desc">192K quality</div>
+                        </label>
+                    </div>
+                    <div class="format-option">
+                        <input type="radio" id="mp4" name="format" value="mp4">
+                        <label for="mp4" class="format-label">
+                            <div class="format-icon">🎬</div>
+                            <div class="format-title">MP4 Video</div>
+                            <div class="format-desc">Max 720p</div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="download-btn" id="downloadBtn">
+                Start Download
+            </button>
+        </form>
+
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-status" id="progressStatus">Processing...</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="progress-detail" id="progressDetail">Please wait...</div>
+        </div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="result-icon">✅</div>
+            <div class="result-message">Your download is ready!</div>
+            <a href="#" class="result-download-btn" id="downloadLink" download>Download File</a>
+        </div>
+
+        <div class="error-container" id="errorContainer">
+            <div class="error-icon">❌</div>
+            <div class="error-message" id="errorMessage">An error occurred</div>
+        </div>
+
+        <div class="api-info">
+            <div class="api-info-title">About This API</div>
+            <div class="api-info-text">
+                This demo uses the Web DLP API to download YouTube content.
+                Rate limit: 5 requests per minute. Files auto-delete after 10 minutes.
+                <br>
+                <a href="https://web-dlp-api-production.up.railway.app/docs" target="_blank" class="api-info-link">
+                    View API Documentation →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://web-dlp-api-production.up.railway.app';
+
+        const form = document.getElementById('downloadForm');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const resultContainer = document.getElementById('resultContainer');
+        const errorContainer = document.getElementById('errorContainer');
+        const progressStatus = document.getElementById('progressStatus');
+        const progressBar = document.getElementById('progressBar');
+        const progressDetail = document.getElementById('progressDetail');
+        const downloadLink = document.getElementById('downloadLink');
+        const errorMessage = document.getElementById('errorMessage');
+
+        let pollingInterval;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Reset UI
+            progressContainer.classList.remove('active');
+            resultContainer.classList.remove('active');
+            errorContainer.classList.remove('active');
+
+            const url = document.getElementById('videoUrl').value;
+            const format = document.querySelector('input[name="format"]:checked').value;
+
+            // Validate YouTube URL
+            if (!isYouTubeUrl(url)) {
+                showError('Please enter a valid YouTube URL');
+                return;
+            }
+
+            // Disable button and show progress
+            downloadBtn.disabled = true;
+            downloadBtn.innerHTML = '<span class="spinner">⏳</span> Processing...';
+            progressContainer.classList.add('active');
+            progressStatus.textContent = 'Creating download job...';
+            progressBar.style.width = '0%';
+
+            try {
+                // Step 1: Create job
+                const createResponse = await fetch(`${API_URL}/request`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url, format })
+                });
+
+                if (!createResponse.ok) {
+                    const error = await createResponse.json();
+                    throw new Error(error.detail || 'Failed to create download job');
+                }
+
+                const { job_id } = await createResponse.json();
+                progressStatus.textContent = 'Job created! Downloading...';
+                progressBar.style.width = '20%';
+                progressDetail.textContent = `Job ID: ${job_id}`;
+
+                // Step 2: Poll for completion
+                await pollJobStatus(job_id, format);
+
+            } catch (error) {
+                console.error('Error:', error);
+                showError(error.message);
+                downloadBtn.disabled = false;
+                downloadBtn.innerHTML = 'Start Download';
+            }
+        });
+
+        async function pollJobStatus(jobId, format) {
+            return new Promise((resolve, reject) => {
+                pollingInterval = setInterval(async () => {
+                    try {
+                        const response = await fetch(`${API_URL}/status?id=${jobId}`);
+
+                        if (!response.ok) {
+                            clearInterval(pollingInterval);
+                            reject(new Error('Failed to check status'));
+                            return;
+                        }
+
+                        const { status, progress, error } = await response.json();
+
+                        // Update progress bar
+                        progressBar.style.width = `${Math.min(progress || 0, 90)}%`;
+                        progressDetail.textContent = `Status: ${status} (${progress || 0}%)`;
+
+                        if (status === 'finished') {
+                            clearInterval(pollingInterval);
+                            progressBar.style.width = '100%';
+                            progressStatus.textContent = 'Download complete!';
+
+                            // Show success and download link
+                            setTimeout(() => {
+                                progressContainer.classList.remove('active');
+                                showSuccess(jobId, format);
+                                downloadBtn.disabled = false;
+                                downloadBtn.innerHTML = 'Start Download';
+                            }, 500);
+
+                            resolve();
+                        } else if (status === 'error') {
+                            clearInterval(pollingInterval);
+                            reject(new Error(error || 'Download failed'));
+                        } else {
+                            progressStatus.textContent = status === 'processing' ? 'Downloading...' : 'In queue...';
+                        }
+                    } catch (err) {
+                        clearInterval(pollingInterval);
+                        reject(err);
+                    }
+                }, 2000); // Poll every 2 seconds
+            });
+        }
+
+        function showSuccess(jobId, format) {
+            resultContainer.classList.add('active');
+            const downloadUrl = `${API_URL}/result?id=${jobId}`;
+            downloadLink.href = downloadUrl;
+            downloadLink.download = `video.${format}`;
+        }
+
+        function showError(message) {
+            errorContainer.classList.add('active');
+            errorMessage.textContent = message;
+            progressContainer.classList.remove('active');
+        }
+
+        function isYouTubeUrl(url) {
+            const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]+/;
+            return youtubeRegex.test(url);
+        }
+
+        // Clean up interval on page unload
+        window.addEventListener('beforeunload', () => {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+        });
+    </script>
+</body>
+
+</html>
