@@ -31,7 +31,7 @@ app = FastAPI(
     2. Check status with `GET /status?id={job_id}`
     3. Download file with `GET /result?id={job_id}`
     
-    For detailed documentation, visit the [custom docs page](/docs).
+    For detailed documentation, visit the [custom docs page](https://web-dlp-api-production.up.railway.app/docs).
     """,
     version="1.0.0",
     contact={
