@@ -2,6 +2,8 @@
 
 A queue-based YouTube downloader API using yt-dlp. Download YouTube videos as MP4 or extract audio as MP3 through a simple REST API.
 
+[![Featured on Orynth](https://orynth.dev/api/badge/web-dlp-api?theme=dark&style=default)](https://orynth.dev/projects/web-dlp-api)
+
 ## Features
 
 - ✅ **Format Selection**: Download as MP4 (video) or MP3 (audio)
