@@ -7,8 +7,8 @@ from typing import Dict, Any
 import uuid
 import time
 
-# Thread-safe queue and dictionary
-job_queue = queue.Queue()
+# Thread-safe dictionary
+# job_queue removed for serverless compatibility
 job_statuses: Dict[str, Dict[str, Any]] = {}
 _lock = threading.Lock()
 
@@ -41,8 +41,8 @@ def create_job(url: str, format: str) -> str:
     with _lock:
         job_statuses[job_id] = job_data
     
-    # Add to queue
-    job_queue.put(job_data)
+    # Queue usage removed for serverless compatibility
+    # The job will be processed via FastAPI BackgroundTasks
     
     return job_id
 

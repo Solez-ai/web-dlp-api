@@ -7,7 +7,7 @@ import time
 import subprocess
 import threading
 from pathlib import Path
-from app.queue import job_queue, update_job_status
+from app.queue import update_job_status
 from app.utils import log_info, log_error
 
 DOWNLOADS_DIR = Path(__file__).parent / "downloads"
@@ -118,31 +118,5 @@ def download_video(job_id: str, url: str, format: str):
         )
 
 
-def worker_process():
-    """
-    Main worker loop that processes jobs from the queue.
-    """
-    log_info("Worker process started, waiting for jobs...")
-    
-    while True:
-        try:
-            # Get job from queue (blocking)
-            job_data = job_queue.get()
-            
-            job_id = job_data['job_id']
-            url = job_data['url']
-            format = job_data['format']
-            
-            log_info(f"Worker received job: {job_id}")
-            
-            # Process the download
-            download_video(job_id, url, format)
-            
-        except Exception as e:
-            log_error(f"Worker error: {str(e)}")
-            time.sleep(1)  # Brief pause before retrying
-
-
-if __name__ == '__main__':
-    # Start the worker thread
-    worker_process()
+# worker_process and __main__ block removed for serverless compatibility.
+# The download_video function is called directly by FastAPI BackgroundTasks.

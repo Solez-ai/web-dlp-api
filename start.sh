@@ -4,11 +4,7 @@
 echo "Starting web-dlp API..."
 echo ""
 
-# Start worker in background
-python -m app.worker &
-
-# Wait a moment
-sleep 2
+# Worker process removed (using BackgroundTasks)
 
 # Start API server
 echo "API server starting on http://localhost:8000"

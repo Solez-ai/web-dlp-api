@@ -26,5 +26,6 @@ EXPOSE 8000
 # Set PYTHONPATH to include the app directory
 ENV PYTHONPATH=/app
 
-# Start both worker and API server using module syntax
-CMD ["bash", "-c", "python -m app.worker & uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+# Start only the API server (serverless compliant)
+# Use shell expansion for PORT variable
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

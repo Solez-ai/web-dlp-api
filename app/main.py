@@ -1,13 +1,14 @@
 """
 FastAPI main application with all API endpoints.
 """
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
 from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from pathlib import Path
 from app.queue import create_job, get_job_status
+from app.worker import download_video
 from app.utils import is_valid_youtube_url, check_rate_limit, log_info, log_error
 from app.cleanup import start_cleanup_thread
 
@@ -86,12 +87,10 @@ async def startup_event():
     # Start cleanup thread
     start_cleanup_thread()
     
-    # Start worker thread
-    import threading
-    from app.worker import worker_process
-    worker_thread = threading.Thread(target=worker_process, daemon=True)
-    worker_thread.start()
-    log_info("Worker thread started")
+    # Worker thread removed for serverless compatibility.
+    # Jobs are now handled via BackgroundTasks.
+    
+    log_info("web-dlp API started successfully")
     
     log_info("web-dlp API started successfully")
 
@@ -130,7 +129,7 @@ async def health_check():
 
 
 @app.post("/request", response_model=JobCreateResponse)
-async def create_download_job(job_request: JobRequest, request: Request):
+async def create_download_job(job_request: JobRequest, request: Request, background_tasks: BackgroundTasks):
     """
     Create a new download job.
     
@@ -169,6 +168,10 @@ async def create_download_job(job_request: JobRequest, request: Request):
     # Create job
     try:
         job_id = create_job(job_request.url, job_request.format)
+        
+        # Add background task
+        background_tasks.add_task(download_video, job_id, job_request.url, job_request.format)
+        
         log_info(f"Created job {job_id} for {job_request.url} ({job_request.format})")
         
         return JobCreateResponse(job_id=job_id, status="queued")
